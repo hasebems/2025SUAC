@@ -19,6 +19,7 @@ void setup() {
   MIDI.begin(MIDI_CHANNEL_OMNI);
 
   pinMode(16, INPUT);
+  pinMode(17, OUTPUT);
 
   // MIDI setting
   MIDI.turnThruOff();
@@ -27,10 +28,16 @@ void setup() {
 void loop() {
   int this_time = digitalRead(16);
   if ((last_time == HIGH) && (this_time == LOW)) {
-      MIDI.sendNoteOn(60, 100, 1);
+    MIDI.sendNoteOn(60, 100, 1);
   }
   if ((last_time == LOW) && (this_time == HIGH)) {
     MIDI.sendNoteOff(60, 0,  1);
   }
+  if (this_time == LOW) {
+    digitalWrite(17, HIGH);
+  } else {
+    digitalWrite(17, LOW);
+  }
+
   last_time = this_time;
 }
