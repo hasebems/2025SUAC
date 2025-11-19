@@ -2,11 +2,10 @@
 #include <MIDI.h>
 #include <RPi_Pico_TimerInterrupt.h>
 
-#define 
-
 // USB MIDI object
 Adafruit_USBD_MIDI usb_midi;
 MIDI_CREATE_INSTANCE(Adafruit_USBD_MIDI, usb_midi, MIDI);
+int last_time = HIGH;
 
 void setup() {
   // Device Discriptor
@@ -19,31 +18,19 @@ void setup() {
   usb_midi.begin();
   MIDI.begin(MIDI_CHANNEL_OMNI);
 
+  pinMode(16, INPUT);
+
   // MIDI setting
   MIDI.turnThruOff();
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  
-}
-
-void send_midi_message(uint8_t status, uint8_t second, uint8_t third) {
-  uint8_t channel = (status & 0x0F) + 1;
-  switch(status & 0xF0) {
-      case 0x90: // Note On
-          MIDI.sendNoteOn(second, third, channel);
-          break;
-      case 0x80: // Note Off
-          MIDI.sendNoteOff(second, third, channel);
-          break;
-      case 0xB0: // Control Change
-          //MIDI.sendControlChange(second, third, channel);
-          break;
-      case 0xC0: // Program Change
-          //MIDI.sendProgramChange(second, channel);
-          break;
-      default:
-          break;
+  int this_time = digitalRead(16);
+  if ((last_time == HIGH) && (this_time == LOW)) {
+      MIDI.sendNoteOn(60, 100, 1);
   }
+  if ((last_time == LOW) && (this_time == HIGH)) {
+    MIDI.sendNoteOff(60, 0,  1);
+  }
+  last_time = this_time;
 }
