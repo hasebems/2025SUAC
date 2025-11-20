@@ -8,6 +8,9 @@ MIDI_CREATE_INSTANCE(Adafruit_USBD_MIDI, usb_midi, MIDI);
 int last_time = HIGH;
 
 void setup() {
+  // USB MIDI とシリアルを同時に有効にするための裏ワザ
+  Serial.begin(115200);
+
   // Device Discriptor
   TinyUSBDevice.setManufacturerDescriptor("YourName");
   TinyUSBDevice.setProductDescriptor("YourDevice");
@@ -27,12 +30,18 @@ void setup() {
 
 void loop() {
   int this_time = digitalRead(16);
+
+  // MIDI送信 & シリアルモニタ送信
   if ((last_time == HIGH) && (this_time == LOW)) {
     MIDI.sendNoteOn(60, 100, 1);
+    Serial.print("on\n");
   }
   if ((last_time == LOW) && (this_time == HIGH)) {
     MIDI.sendNoteOff(60, 0,  1);
+    Serial.print("off\n");
   }
+
+  // LED点灯
   if (this_time == LOW) {
     digitalWrite(17, HIGH);
   } else {
