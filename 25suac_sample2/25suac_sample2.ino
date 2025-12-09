@@ -1,6 +1,5 @@
 #include <Adafruit_TinyUSB.h>
 #include <MIDI.h>
-#include <RPi_Pico_TimerInterrupt.h>
 
 // USB MIDI object
 Adafruit_USBD_MIDI usb_midi;
